@@ -6,10 +6,9 @@ Tag-it is a simple and configurable tag editing widget with autocomplete support
 
 ## Demo
 
-![Screenshot](http://aehlke.github.com/tag-it/screenshot.png)
+![Screenshot](http://aehlke.github.com/tag-it/_static/screenshot.png)
 
-Check the [examples.html](http://aehlke.github.com/tag-it/examples.html) for several demos.
-
+Check the [examples.html](http://aehlke.github.com/tag-it/examples.html) for several demos and the [prototype.js](http://aehlke.github.com/tag-it/prototype.js) file for a JavaScript prototype with all options and events.
 
 ## Usage
 
@@ -21,7 +20,7 @@ First, load [jQuery](http://jquery.com/) (v1.4 or greater), [jQuery UI](http://j
 
 If you're using a custom jQuery UI build, it must contain the Core, Widget, Position, and Autocomplete components. The Effects Core with "Blind" and "Highlight" Effect components are optional, but used if available.
 
-The plugin requires a jQuery UI theme to be present, as well as its own included base CSS file ([jquery.tagit.css](http://github.com/aehlke/tag-it/raw/master/css/jquery.tagit.css)). Here we use the Flick theme as an example:
+The plugin requires either a jQuery UI theme or a Tag-it theme to be present, as well as its own included base CSS file ([jquery.tagit.css](http://github.com/aehlke/tag-it/raw/master/css/jquery.tagit.css)). Here we use the Flick theme as an example:
 
     <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css">
 	<link href="css/jquery.tagit.css" rel="stylesheet" type="text/css">
@@ -30,17 +29,17 @@ Now, let's attach it to an existing `<ul>` box:
 
     <script type="text/javascript">
         $(document).ready(function() {
-            $("#mytags").tagit();
+            $("#myTags").tagit();
         });
     </script>
 
-    <ul id="mytags">
+    <ul id="myTags">
         <!-- Existing list items will be pre-added to the tags -->
         <li>Tag1</li>
         <li>Tag2</li>
     </ul>
 
-This will turn the list into a tag-it widget. There are several other possible configurations and ways to instantiate the widget, including one that uses a single comma-delimited `input` field rather than one per tag, so see the **Options** documentation below as well as the [examples page](http://aehlke.github.com/tag-it/examples.html) (and its source) which demonstrates most of them.
+This will turn the list into a tag-it widget. There are several other possible configurations and ways to instantiate the widget, including one that uses a single comma-delimited `input` field rather than one per tag, so see the **Options** documentation below as well as the [examples page](http://aehlke.github.com/tag-it/examples.html) (and its source) which demonstrates most of them, as well as the Tag-it Zendesk theme used in the screenshot above.
 
 
 ## Theming
@@ -57,7 +56,7 @@ Tag-it accepts several options to customize its behaviour:
 Each tag's hidden input field will have this name.
 If you're using PHP, you may want to use something like `itemName[fieldName][]` for this option's value.
 
-    $("#mytags").tagit({
+    $("#myTags").tagit({
         fieldName: "skills"
     });
 
@@ -67,7 +66,7 @@ Defaults to *tags*.
 
 Used as source for the autocompletion, unless **autocomplete.source** is overridden.
 
-    $("#mytags").tagit({
+    $("#myTags").tagit({
         availableTags: ["c++", "java", "php", "javascript", "ruby", "python", "c"]
     });
 
@@ -78,13 +77,13 @@ Defaults to an empty array *[]*.
 ### autocomplete (Object)
 
 Allows overriding the `source` and `select` options that are set by default,
-as well as adding any other options you want to pass to the jQuery UI Autocomplete widget, such as `minLength` or `delay`. 
+as well as adding any other options you want to pass to the jQuery UI Autocomplete widget, such as `minLength` or `delay`.
 
 The `autocomplete.source` should be overridden if you want to use custom autocompletion sources, like an Ajax / XHR response.
 
 For example:
 
-    $("#mytags").tagit({
+    $("#myTags").tagit({
         autocomplete: {delay: 0, minLength: 2}
     });
 
@@ -134,7 +133,7 @@ Defaults to *false*.
 ### tagLimit (integer)
 
 Limits the total number of tags that can be entered at once. Note that if you use this option with preloaded data,
-it may truncate the number of preloaded tags. Set to `null` for unlimited tags. See the **onTagLimitExceeded** 
+it may truncate the number of preloaded tags. Set to `null` for unlimited tags. See the **onTagLimitExceeded**
 callback for customizing this behavior.
 
 Defaults to *null*.
@@ -183,7 +182,7 @@ the user or by the widget's initialization.
 
 To cancel a tag from being added, simply return `false` in your event callback to bail out from adding the tag and stop propagation of the event.
 
-    $("#mytags").tagit({
+    $("#myTags").tagit({
         beforeTagAdded: function(event, ui) {
             // do something special
             console.log(ui.tag);
@@ -203,7 +202,7 @@ To cancel a tag from being removed, simply return `false` in your event callback
 
 The function receives a null event, and an object with `tag` and `tagLabel` properties.
 
-    $("#mytags").tagit({
+    $("#myTags").tagit({
         beforeTagRemoved: function(event, ui) {
             // do something special
             console.log(ui.tag);
@@ -229,7 +228,7 @@ By default it will visually highlight the existing tag, unless you return *false
 Can be used to add custom behaviour when the tag is clicked.
 The function receives the click event and an objecting containing `tag` and `tagLabel` properties.
 
-    $("#mytags").tagit({
+    $("#myTags").tagit({
         onTagClicked: function(event, ui) {
             // do something special
             console.log(ui.tag);
@@ -246,30 +245,40 @@ and an object with the property `duringInitialization`. This can only be called 
 ### assignedTags()
 Returns an array of the text values of all the tags currently in the widget.
 
-    $("#mytags").tagit("assignedTags");
+    $("#myTags").tagit("assignedTags");
 
 ### createTag(tagLabel, additionalClass)
 Adds new tag to the list. The `additionalClass` parameter is an optional way to add classes to the tag element.
 
-    $("#mytags").tagit("createTag", "brand-new-tag");
+    $("#myTags").tagit("createTag", "brand-new-tag");
+
+### preprocessTag(function, Callback)
+Set a function to be called before tag is created. Callback receives the
+value of the tag created.
+
+    // ensure all tags are capitalized
+    $(#tag-it").tagit("preprocessTag", function(val) {
+      if (!val) { return ''; }
+      return val[0].toUpperCase() + val.slice(1, val.length);
+    });
+    // foo -> Foo
 
 ### removeTagByLabel(tagLabel, animate)
 Finds the tag with the label `tagLabel` and removes it. If no such tag is found, it'll throw an exception.
 
-    $("#mytags").tagit("removeTagByLabel", "my-tag");
+    $("#myTags").tagit("removeTagByLabel", "my-tag");
 
 ### removeAll()
 Clears the widget of all tags — removes each tag it contains, so the **beforeTagRemoved** / **afterTagRemoved** event callbacks (if set) will be called for each.
 
-    $("#mytags").tagit("removeAll");
-
+    $("#myTags").tagit("removeAll");
 
 ## Properties
 
 ### tagInput
 The `<input>` field which is used for entering new tags. It's a jQuery object, so you may use it to add a class or anything to it, e.g.:
 
-    $("#mytags").tagit("tagInput").addClass("fancy");
+    $("#myTags").tagit("tagInput").addClass("fancy");
 
 
 ## Authors
